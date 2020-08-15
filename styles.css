@@ -1,8 +1,9 @@
 body {
   display: flex;
-  font-family: "Courier New", Courier, monospace;
+  font-family: sans-serif;
   color: white;
   background-color: #454551;
+  font-size: 14px;
 }
 
 

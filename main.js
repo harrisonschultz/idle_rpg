@@ -14,7 +14,7 @@ async function main() {
 
     // perform selected action
     performAction();
-
+    
     await regulateTickRate(tickRate);
   }
 }

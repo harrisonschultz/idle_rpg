@@ -34,7 +34,7 @@ export class ProgressBar extends HTMLElement {
     progress.style.backgroundColor = this.color;
 
     if (this.label) {
-      this.shadowRoot.getElementById("label").innerHTML = this.label;
+      this.shadowRoot.getElementById("label").innerHTML = `${this.label[0].toUpperCase()}${this.label.substring(1)}`;
     }
 
     this.render();

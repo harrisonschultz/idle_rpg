@@ -100,15 +100,23 @@ import { theme } from "../theme.js";
   customElements.define("character-sheet", Character);
 })();
 
+export function setAvailableActions(actions) {
+  window.player.availableActions = actions
+}
+
 export function getStat(stat) {
   return window.player.stats[stat];
+}
+
+export function getAttr(attr) {
+  return window.player.attrs[attr]
 }
 
 export function getAttrProgress(attr) {
   return { current: window.player.attrs[attr].exp, max: window.player.attrs[attr].expNeeded };
 }
 
-export function addAttrExp(attr, exp) {
+export function addAttrExp(attr, exp, level = false) {
   const { attrs } = window.player;
 
   // Add exp and handle levels
@@ -125,11 +133,14 @@ export function addAttrExp(attr, exp) {
     // Base case is when exp amount does not cause us to level up.
     attrs[attr].level++;
     attrs[attr].exp = 0;
-    addAttrExp(attr, Math.abs(expLeft));
+    addAttrExp(attr, Math.abs(expLeft), true);
   } else {
     // Base case hit, call send out event for components to render.
     attrs[attr].exp = currentExp + exp;
     charChange();
+    if (level) {
+      attrLevel();
+    }
   }
 }
 
@@ -170,5 +181,10 @@ export function actionChange(data = {}) {
 
 export function charChange(data = {}) {
   const event = new CustomEvent("character-changed", data);
+  document.dispatchEvent(event);
+}
+
+export function attrLevel(data = {}) {
+  const event = new CustomEvent("attr-level", data);
   document.dispatchEvent(event);
 }
