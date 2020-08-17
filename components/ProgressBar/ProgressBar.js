@@ -1,5 +1,5 @@
 export class ProgressBar extends HTMLElement {
-  constructor(event, getter, color, options = undefined, style = {}) {
+  constructor(event, getter, color, options = {}, style = {}) {
     super();
 
     this.getter = getter;
@@ -41,21 +41,23 @@ export class ProgressBar extends HTMLElement {
   };
 
   render = () => {
-    // Get value
-    const data = this.getter();
+    if (this.shadowRoot) {
+      // Get value
+      const data = this.getter();
 
-    const progress = this.shadowRoot.getElementById("progress");
-    const progressValue = this.shadowRoot.getElementById("progress-value");
+      const progress = this.shadowRoot.getElementById("progress");
+      const progressValue = this.shadowRoot.getElementById("progress-value");
 
-    // set value
-    if (this.options.value) {
-      progressValue.innerHTML = `${data.current.toFixed(0)} / ${data.max.toFixed(0)}`;
+      // set value
+      if (this.options.value) {
+        progressValue.innerHTML = `${data.current.toFixed(0)} / ${data.max.toFixed(0)}`;
+      }
+
+      // calcuate percentage
+      const width = (data.current / data.max) * 100 - 100;
+
+      progress.style.transform = `translate(${width}%)`;
     }
-
-    // calcuate percentage
-    const width = (data.current / data.max) * 100 - 100;
-
-    progress.style.transform = `translate(${width}%)`;
   };
 }
 
