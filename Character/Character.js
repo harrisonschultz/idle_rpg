@@ -1,5 +1,6 @@
 import { ProgressBar } from "../components/ProgressBar/ProgressBar.js";
 import { theme } from "../theme.js";
+import { adventures } from "../Adventure/Adventure.js";
 
 const STR_HEALTH_MODIFIER = 1;
 const INT_MANA_MODIFIER = 1;
@@ -143,8 +144,8 @@ export function setAvailableActions(actions) {
   window.player.availableActions = actions;
 }
 
-export function getStat(stat) {
-  return window.player.stats[stat];
+export function getStat(stat, char = window.player) {
+  return char.stats[stat];
 }
 
 export function setStat(stat, statData) {
@@ -152,12 +153,28 @@ export function setStat(stat, statData) {
   statChange()
 }
 
+export function completeAdventure() {
+  resetAdventure()
+  adventureChanged();
+  setAction('rest')
+}
+
 export function setCurrentEnemy(enemy) {
   window.player.adventure.currentEnemy = enemy;
 }
 
-export function setStatCurrent(stat, value, char = window.player) {
-  char.stats[stat].current = value;
+export function addStatCurrent(stat, value, char = window.player) {
+  char.stats[stat].current += value;
+  if (char.stats[stat].current > char.stats[stat].max) {
+    char.stats[stat].current = char.stats[stat].max;
+  } else if (char.stats[stat].current < 0) {
+    char.stats[stat].current = 0;
+  }
+  statChange()
+}
+
+export function subtractStatCurrent(stat, value, char = window.player) {
+  char.stats[stat].current -= value;
   if (char.stats[stat].current > char.stats[stat].max) {
     char.stats[stat].current = char.stats[stat].max;
   } else if (char.stats[stat].current < 0) {
@@ -180,28 +197,27 @@ export function getJob(char = window.player) {
 
 export function addJobExp(exp, level = false) {
   const { job } = window.player;
-
   // Higher tier jobs require more exp
   const expMultiplier = job.tier * 3;
 
   // Add exp and handle levels
-  const totalExpNeeded = 1 * Math.pow(1.1, job.level * expMultiplier);
-  const currentExp = job.exp;
+  const totalExpNeeded = 1 * Math.pow(1.1, job.level.level * expMultiplier);
+  const currentExp = job.level.exp;
   const expLeft = totalExpNeeded - (exp + currentExp);
 
   // Set the expNeeded
-  job.expNeeded = totalExpNeeded;
+  job.level.expNeeded = totalExpNeeded;
 
   if (expLeft < 0) {
     // If expLeft is less than zero than we have leveled up
     // Recursively call the function to continue to level.
     // Base case is when exp amount does not cause us to level up.
-    job.level++;
-    job.exp = 0;
-    addJobExp(attr, Math.abs(expLeft), true);
+    job.level.level++;
+    job.level.exp = 0;
+    addJobExp(Math.abs(expLeft), true);
   } else {
     // Base case hit, call send out event for components to render.
-    job.exp = currentExp + exp;
+    job.level.exp = currentExp + exp;
     jobProgress();
     if (level) {
       jobLevel();
@@ -323,9 +339,9 @@ export function setAction(action) {
 }
 
 export function resetAdventure() {
-
   if (window.player.adventure) {
-    window.player.adventure.progress.current = 0;
+    window.player.adventure.currentEnemy = undefined
+    window.player.adventure.progress.current = 0
   }
 }
 
@@ -340,8 +356,9 @@ export function getAdventureProgress() {
 export function addAdventureProgress(val) {
   const { progress } = window.player.adventure;
   let newDistance = progress.current + val;
+
   if (newDistance > progress.max) {
-    setAction("rest");
+    completeAdventure();
   } else {
     setAdventureProgress(newDistance);
   }
@@ -353,7 +370,7 @@ export function setAdventureProgress(val) {
 }
 
 export function setAdventure(adv) {
-  window.player.adventure = adv;
+  window.player.adventure = {...adv};
   adventureChanged();
   adventureProgress();
 }

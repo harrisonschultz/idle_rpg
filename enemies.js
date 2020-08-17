@@ -1,6 +1,7 @@
 export const enemies = {
   feeder: {
     prop: "feeder",
+    label: 'Feeder',
     description: "They want you to win, but they need to at least not be afk.",
     attrs: {
       agi: { label: "Agility", level: 1, exp: 0, expNeeded: 0 },
@@ -20,7 +21,7 @@ export const enemies = {
     },
 
     stats: {
-      health: { current: 5, max: 1 },
+      health: { current: 12, max: 1 },
       stamina: { current: 1, max: 1 },
       mana: { current: 1, max: 1 },
     },
@@ -29,6 +30,7 @@ export const enemies = {
 
   toxicGamer: {
     prop: "toxicGamer",
+    label: 'Toxic Gamer',
     description: 'Colloquially known as "dumbass teammate", they do at least try harder than the feeder.',
     attrs: {
       agi: { label: "Agility", level: 1, exp: 0, expNeeded: 0 },
@@ -44,22 +46,23 @@ export const enemies = {
         criticalDamage: 2.0,
         dmgModifiers: [
           { name: "int", modifier: 0.3 },
-          { name: "luck", modifier: 0.1 },
+          { name: "lck", modifier: 0.1 },
         ],
         variance: 0.1, // gives attacks a range of damage by 10% either up or down.
       },
     },
 
     stats: {
-      health: { current: 3, max: 1 },
+      health: { current: 8, max: 1 },
       stamina: { current: 1, max: 1 },
       mana: { current: 1, max: 1 },
     },
     reward: { exp: 0.3 },
   },
 
-  afk: {
-    prop: "afk",
+  afkGamer: {
+    prop: "afkGamer",
+    label: 'AFK Gamer',
     description: "This person has completed checked out.",
     attrs: {
       agi: { label: "Agility", level: 1, exp: 0, expNeeded: 0 },
@@ -79,7 +82,7 @@ export const enemies = {
     },
 
     stats: {
-      health: { current: 3, max: 1 },
+      health: { current: 10, max: 1 },
       stamina: { current: 1, max: 1 },
       mana: { current: 1, max: 1 },
     },

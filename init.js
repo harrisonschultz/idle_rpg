@@ -18,6 +18,7 @@ export function initialize() {
       label: 'Child',
       description: 'You are child with no specific strengths.',
       level: { level: 1, exp: 0, expNeeded: 0  },
+      tier: 1,
       attack: {
         speed: 10,
         criticalDamage: 1.5,

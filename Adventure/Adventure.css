@@ -8,6 +8,10 @@
   flex-direction: column;
 }
 
+#current-adventure-progress {
+  margin: 10px 0px;
+}
+
 /* Reset */
 button {
   background: none;

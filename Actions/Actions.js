@@ -103,7 +103,7 @@ export const actions = {
     tier: 1,
     description: "Collecting Rocks",
     label: "Collect Rocks",
-    attrs: [{ name: "str", value: 0.1 }],
+    attrs: [{ name: "str", value: 0.01 }],
     stats: [{ name: "fatigue", value: -0.1 }],
   },
 
@@ -127,7 +127,7 @@ export const actions = {
     tier: 1,
     description: "Walking",
     label: "Walk",
-    attrs: [{ name: "agi", value: 0.5 }],
+    attrs: [{ name: "agi", value: 0.01 }],
     stats: [{ name: "fatigue", value: -0.1 }],
   },
 

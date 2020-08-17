@@ -5,6 +5,8 @@ import { theme } from '../theme.js';
 export class JobsDetails extends HTMLElement {
   constructor() {
     super();
+
+    document.addEventListener('job-level', this.render)
   }
 
   async connectedCallback() {
@@ -26,10 +28,10 @@ export class JobsDetails extends HTMLElement {
     this.shadowRoot.getElementById("jobs-value").innerHTML = job.level.level
 
     const attrBar = new ProgressBar(
-      "jobs-level",
+      "job-progress",
       () => getJobProgress(),
       theme.colors.pastelYellow,
-      { value: false },
+      { value: true, duration: 0.8, resetOnOverflow: true },
       { height: "4px" }
     );
     
@@ -39,7 +41,7 @@ export class JobsDetails extends HTMLElement {
 
   render = () => {
     const job =  getJob()
-    this.shadowRoot.getElementById("jobs-value").innerHTML = job.level.level
+    this.shadowRoot.getElementById("jobs-value").innerHTML = `${job.level.level}`
   }
 }
 

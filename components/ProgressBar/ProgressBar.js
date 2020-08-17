@@ -40,6 +40,16 @@ export class ProgressBar extends HTMLElement {
     this.render();
   };
 
+  getDuration = () => {
+    let duration = 0.09;
+
+    if (this.options.duration) {
+      duration = this.options.duration
+    }
+
+    return duration;
+  };
+
   render = () => {
     if (this.shadowRoot) {
       // Get value
@@ -53,10 +63,21 @@ export class ProgressBar extends HTMLElement {
         progressValue.innerHTML = `${data.current.toFixed(0)} / ${data.max.toFixed(0)}`;
       }
 
+      this.oldValue = this.currentValue
       // calcuate percentage
       const width = (data.current / data.max) * 100 - 100;
+      this.currentValue = width
 
-      progress.style.transform = `translate(${width}%)`;
+      if (this.options.resetOnOverflow && (this.oldValue > this.currentValue || !this.oldValue)) {
+         // Animate bar
+         progress.style.transition = `transform 0.1s linear`;
+         progress.style.transform = `translate(${width}%)`;
+      } else {
+        // Animate bar
+        progress.style.transition = `transform ${this.getDuration()}s linear`;
+        progress.style.transform = `translate(${width}%)`;
+      }
+
     }
   };
 }

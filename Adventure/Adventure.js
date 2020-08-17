@@ -9,7 +9,7 @@ import {
 import { Button } from "../components/Button/Button.js";
 import { ProgressBar } from "../components/ProgressBar/ProgressBar.js";
 import { theme } from "../theme.js";
-import { enemies } from '../enemies.js'
+import { enemies } from "../enemies.js";
 
 export class Adventure extends HTMLElement {
   constructor() {
@@ -40,7 +40,17 @@ export class Adventure extends HTMLElement {
   renderAdventureProgressBar = () => {
     if (getAdventure()) {
       const progressContainer = this.shadowRoot.getElementById("current-adventure-progress");
-      const progressBar = new ProgressBar("adventure-progress", getAdventureProgress, theme.colors.pastelPaleGreen);
+
+      // Remove previous progress bar
+      if (progressContainer.firstChild) {
+        progressContainer.removeChild(progressContainer.firstChild)
+      }
+
+      const progressBar = new ProgressBar("adventure-progress", getAdventureProgress, theme.colors.pastelPaleGreen, {
+        label: getAdventure().label,
+        value: true,
+        duration: 0.8,
+      });
       progressContainer.appendChild(progressBar);
     }
   };
@@ -79,19 +89,18 @@ export const adventures = {
     tooltip: "ELO Hell, The Trenches, all you know about this place is everyone in here sucks except you.",
     label: "ELO Hell",
     progress: { current: 0, max: 7 },
-    enemies: ["toxicGamer", "afk", "feeder"],
+    enemies: ["toxicGamer", "afkGamer", "feeder"],
     boss: ["smurf"],
   },
 };
 
 export function startAdventure(adv) {
-  setAction('adventure')
-  setAdventure(adv)
+  setAction("adventure");
+  setAdventure(adv);
 }
 
-
 export function getRandomEnemy(adventure) {
-  const rand = Math.round(Math.random() * adventure.enemies.length);
+  const rand = Math.floor(Math.random() * adventure.enemies.length);
   return enemies[adventure.enemies[rand]];
 }
 
