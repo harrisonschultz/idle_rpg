@@ -1,3 +1,5 @@
+import { jobs } from "./Jobs/Jobs.js"
+
 export function initialize() {
   window.player = {
     prevAction: "rest",
@@ -13,19 +15,11 @@ export function initialize() {
       str: { label: "Strength", level: 1, exp: 0, expNeeded: 0 },
     },
 
-    job: {
-      prop: 'child',
-      label: 'Child',
-      description: 'You are child with no specific strengths.',
-      level: { level: 1, exp: 0, expNeeded: 0  },
-      tier: 1,
-      attack: {
-        speed: 10,
-        criticalDamage: 1.5,
-        dmgModifiers: [{name: 'str', modifier: 0.5}, {name: 'agi', modifier: 0.5}],
-        variance: 0.1 // gives attacks a range of damage by 10% either up or down.
-      }
-    },
+    job: 'child',
+
+    jobs: jobs,
+
+    skillPoints: {},
 
     adventure: undefined,
     adventures: [],

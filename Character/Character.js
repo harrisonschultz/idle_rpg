@@ -150,13 +150,13 @@ export function getStat(stat, char = window.player) {
 
 export function setStat(stat, statData) {
   window.player.stats[stat] = statData;
-  statChange()
+  statChange();
 }
 
 export function completeAdventure() {
-  resetAdventure()
+  resetAdventure();
   adventureChanged();
-  setAction('rest')
+  setAction("rest");
 }
 
 export function setCurrentEnemy(enemy) {
@@ -170,7 +170,7 @@ export function addStatCurrent(stat, value, char = window.player) {
   } else if (char.stats[stat].current < 0) {
     char.stats[stat].current = 0;
   }
-  statChange()
+  statChange();
 }
 
 export function subtractStatCurrent(stat, value, char = window.player) {
@@ -180,7 +180,7 @@ export function subtractStatCurrent(stat, value, char = window.player) {
   } else if (char.stats[stat].current < 0) {
     char.stats[stat].current = 0;
   }
-  statChange()
+  statChange();
 }
 
 export function getAttr(attr, char = window.player) {
@@ -188,15 +188,15 @@ export function getAttr(attr, char = window.player) {
 }
 
 export function getJobProgress(char = window.player) {
-  return { current: char.job.level.exp, max: char.job.level.expNeeded };
+  return { current: getJob(char).level.exp, max: getJob(char).level.expNeeded };
 }
 
 export function getJob(char = window.player) {
-  return char.job;
+  return char.jobs[char.job];
 }
 
 export function addJobExp(exp, level = false) {
-  const { job } = window.player;
+  const job = getJob();
   // Higher tier jobs require more exp
   const expMultiplier = job.tier * 3;
 
@@ -220,9 +220,20 @@ export function addJobExp(exp, level = false) {
     job.level.exp = currentExp + exp;
     jobProgress();
     if (level) {
-      jobLevel();
+      levelUpJob();
     }
   }
+}
+
+export function levelUpJob() {
+  // Add skill points
+  getJob().skillPoints++;
+
+  jobLevel();
+}
+
+export function getSkillPoints(job) {
+  return getJob().skillPoints;
 }
 
 export function setCombatStartTick(tick) {
@@ -340,8 +351,8 @@ export function setAction(action) {
 
 export function resetAdventure() {
   if (window.player.adventure) {
-    window.player.adventure.currentEnemy = undefined
-    window.player.adventure.progress.current = 0
+    window.player.adventure.currentEnemy = undefined;
+    window.player.adventure.progress.current = 0;
   }
 }
 
@@ -370,7 +381,7 @@ export function setAdventureProgress(val) {
 }
 
 export function setAdventure(adv) {
-  window.player.adventure = {...adv};
+  window.player.adventure = { ...adv };
   adventureChanged();
   adventureProgress();
 }
