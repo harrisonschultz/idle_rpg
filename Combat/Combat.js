@@ -138,6 +138,20 @@ function awardPlayer(enemy) {
   addJobExp(enemy.reward.exp);
 }
 
+export function getAttackDamageRange(job) {
+  const attack = job.attack
+  let baseDmg = 0;
+  for (const attr of attack.dmgModifiers) {
+    baseDmg += getAttr(attr.name).level * attr.modifier;
+  }
+
+  // Add variance
+  const min = (1 - attack.variance) * baseDmg
+  const max = (1 + attack.variance) * baseDmg
+
+  return { min: Math.floor(min), max: Math.ceil(max) }
+}
+
 export function calculateDamage(attack, attacker, defender) {
   let baseDmg = 0;
   let finalDmg;
@@ -155,7 +169,7 @@ export function calculateDamage(attack, attacker, defender) {
 }
 
 export function rollForOnHits(damage, attacker, defender) {
-  const attack = attacker.job.attack;
+  const attack = attacker.jobs[attacker.job].attack;
   let finalDmg = damage;
 
   const critChance = getSecondaryAttribute("criticalChance", attacker);

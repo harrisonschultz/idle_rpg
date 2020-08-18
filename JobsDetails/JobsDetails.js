@@ -1,14 +1,17 @@
 import { getJob, getJobProgress, getSkillPoints } from '../Character/Character.js'
+import { getAttackDamageRange } from '../Combat/Combat.js'
 import { ProgressBar } from "../components/ProgressBar/ProgressBar.js";
 import { theme } from '../theme.js';
 import { jobs } from '../Jobs/Jobs.js'
 
 export class JobsDetails extends HTMLElement {
-  constructor(job) {
+  constructor(job, self = false) {
     super();
 
-    this.job = job
+    this.job = job || getJob();
+    this.self = self;
 
+    document.addEventListener('job-changed', this.render)
     document.addEventListener('job-level', this.render)
   }
 
@@ -26,18 +29,9 @@ export class JobsDetails extends HTMLElement {
   }
 
   intialRender = () => {
-    if (this.job) {
-
-    }
-    
-    const job = getJob()
-    this.shadowRoot.getElementById("jobs-label").innerHTML = jobs[job.prop].label
-    this.shadowRoot.getElementById("jobs-value").innerHTML = job.level.level
-    this.shadowRoot.getElementById("job-skill-points-value").innerHTML = getSkillPoints(job.prop)
-
     const attrBar = new ProgressBar(
       "job-progress",
-      () => getJobProgress(),
+      () => getJobProgress(window.player, this.job.prop),
       theme.colors.pastelYellow,
       { value: true, duration: 0.8, resetOnOverflow: true },
       { height: "4px" }
@@ -45,12 +39,32 @@ export class JobsDetails extends HTMLElement {
     
     this.shadowRoot.getElementById(`jobs-bar`).appendChild(attrBar);
     attrBar.className = "bar";
+
+   this.render();
   };
 
   render = () => {
-    const job =  getJob()
-    this.shadowRoot.getElementById("jobs-value").innerHTML = `${job.level.level}`
-    this.shadowRoot.getElementById("job-skill-points-value").innerHTML = getSkillPoints(job.prop)
+    if (this.self) {
+      this.job = getJob()
+    }
+
+    if(this.shadowRoot) {
+
+
+    this.shadowRoot.getElementById("jobs-label").innerHTML = this.job.label
+    this.shadowRoot.getElementById("jobs-value").innerHTML = `${this.job.level.level}`
+    this.shadowRoot.getElementById("job-skill-points-value").innerHTML = getSkillPoints(this.job.prop)
+
+     // Add job stats
+     const dmg = this.shadowRoot.getElementById('job-attack-damage-value')
+     const attackSpeed = this.shadowRoot.getElementById('job-attack-speed-value')
+     const critDmg = this.shadowRoot.getElementById('job-crit-damage-value')
+ 
+     const damageRange = getAttackDamageRange(this.job)
+     dmg.innerHTML = `${damageRange.min} - ${damageRange.max}`
+     attackSpeed.innerHTML = `${this.job.attack.speed / 10}s`
+     critDmg.innerHTML = `${this.job.attack.criticalDamage * 100}%`
+    }
   }
 }
 

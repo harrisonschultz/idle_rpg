@@ -8,11 +8,11 @@ export function initialize() {
     tab: "Train",
 
     attrs: {
-      agi: { label: "Agility", level: 1, exp: 0, expNeeded: 0 },
-      int: { label: "Intelligence", level: 1, exp: 0, expNeeded: 0 },
-      lck: { label: "Luck", level: 1, exp: 0, expNeeded: 0 },
-      per: { label: "Perception", level: 1, exp: 0, expNeeded: 0 },
-      str: { label: "Strength", level: 1, exp: 0, expNeeded: 0 },
+      agi: { label: "Agility", level: 1, exp: 0, expNeeded: 1.1 },
+      int: { label: "Intelligence", level: 1, exp: 0, expNeeded: 1.1 },
+      lck: { label: "Luck", level: 1, exp: 0, expNeeded: 1.1 },
+      per: { label: "Perception", level: 1, exp: 0, expNeeded: 1.1 },
+      str: { label: "Strength", level: 100, exp: 0, expNeeded: 1.1 },
     },
 
     job: 'child',

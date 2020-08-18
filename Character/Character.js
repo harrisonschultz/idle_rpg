@@ -1,6 +1,7 @@
 import { ProgressBar } from "../components/ProgressBar/ProgressBar.js";
 import { theme } from "../theme.js";
 import { adventures } from "../Adventure/Adventure.js";
+import { JobsDetails } from "../JobsDetails/JobsDetails.js";
 
 const STR_HEALTH_MODIFIER = 1;
 const INT_MANA_MODIFIER = 1;
@@ -55,6 +56,10 @@ const AGI_STAMINA_MODIFIER = 1;
         this.shadowRoot.getElementById(`${s}-bar`).appendChild(statBar);
         statBar.className = "bar";
       }
+
+      // Job details
+      const jobDetails = new JobsDetails(undefined, true)
+      this.shadowRoot.getElementById("character-jobs-details").appendChild(jobDetails)
 
       // Attribute bars
       const attrContainer = this.shadowRoot.getElementById("attributes-container");
@@ -187,8 +192,16 @@ export function getAttr(attr, char = window.player) {
   return char.attrs[attr];
 }
 
-export function getJobProgress(char = window.player) {
-  return { current: getJob(char).level.exp, max: getJob(char).level.expNeeded };
+export function getJobProgress(char = window.player, jobName = undefined) {
+  let job = getJob();
+  if (jobName) {
+    job = getAnyJob(jobName, char);
+  }
+  return { current: job.level.exp, max: job.level.expNeeded };
+}
+
+export function getAnyJob(jobName, char = window.player) {
+  return char.jobs[jobName];
 }
 
 export function getJob(char = window.player) {
@@ -232,8 +245,18 @@ export function levelUpJob() {
   jobLevel();
 }
 
-export function getSkillPoints(job) {
-  return getJob().skillPoints;
+export function getJobs(char = window.player) {
+  return char.jobs
+}
+
+export function setJob(job) {
+  window.player.job = job
+  jobChanged()
+  jobProgress()
+}
+
+export function getSkillPoints(jobName) {
+  return window.player.jobs[jobName].skillPoints;
 }
 
 export function setCombatStartTick(tick) {
@@ -428,6 +451,11 @@ export function adventureProgress(data = {}) {
 
 export function attrLevel(data = {}) {
   const event = new CustomEvent("attr-level", data);
+  document.dispatchEvent(event);
+}
+
+export function jobChanged(data = {}) {
+  const event = new CustomEvent("job-changed", data);
   document.dispatchEvent(event);
 }
 

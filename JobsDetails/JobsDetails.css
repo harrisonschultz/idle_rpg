@@ -23,7 +23,7 @@
 .bar {
   flex: 1;
   display: flex;
-  padding: 2px 0px;
+  padding: 3px 0px;
 }
 
 .max-value {
@@ -44,15 +44,32 @@
 .attribute-value {
   width: 80px;
   text-align: end;
+  margin-left: auto;
 }
 
 #job-skill-points-value {
   margin-left: auto;
 }
 
+.job-attack-details {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 5px 0px 2px 0px;
+}
+
 .job-skill-points {
   display: flex;
-  margin-top: 6px;
+  margin-top: 3px;
   font-size: 13px;
+}
+
+.job-icon {
+  font-size: 18px;
+}
+
+.job-attack-detail-container {
+
+  margin: 3px 0px;
+  width: 50%;
 }
 
