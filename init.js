@@ -24,6 +24,7 @@ export function initialize() {
     adventures: [],
 
     skills: [],
+    skillsUnlocked: [],
 
     stats: {
       health: { current: 1, max: 1 },

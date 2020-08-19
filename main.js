@@ -37,7 +37,7 @@ function initialRender() {
       view: new Adventure(),
     },
     {
-      label: "Classes",
+      label: "Character",
       view: new JobsList(),
     },
   ]);

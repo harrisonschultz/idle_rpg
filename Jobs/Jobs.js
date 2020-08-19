@@ -1,4 +1,4 @@
-import { getJob, getJobs, setJob, getJobProgress, addJobExp } from "../Character/Character.js";
+import { getJob, getJobs, setJob, getJobProgress, addJobExp, getAttr } from "../Character/Character.js";
 import { ProgressBar } from "../components/ProgressBar/ProgressBar.js";
 import { theme } from "../theme.js";
 import { JobsDetails } from "../JobsDetails/JobsDetails.js";
@@ -29,7 +29,7 @@ export class JobsList extends HTMLElement {
     const tier2 = this.shadowRoot.getElementById("jobs-tier-2");
     const tier3 = this.shadowRoot.getElementById("jobs-tier-3");
     const tier4 = this.shadowRoot.getElementById("jobs-tier-4");
-    const jobTiers = [tier1, tier2, tier3, tier4]
+    const jobTiers = [tier1, tier2, tier3, tier4];
 
     for (const j in getJobs()) {
       const job = jobs[j];
@@ -39,11 +39,11 @@ export class JobsList extends HTMLElement {
       jobDiv.id = `jobs-${j}`;
       jobDiv.className = "jobs-item";
       jobDiv.appendChild(jobProgress);
-      jobTiers[job.tier - 1].appendChild(jobDiv)
+      jobTiers[job.tier - 1].appendChild(jobDiv);
 
-      const button = new Button(job, 'jobs', (jb) => setJob(jb.prop), 'Select')
-      button.className += 'jobs-select-button'
-      jobDiv.appendChild(button)
+      const button = new Button(job, "jobs", (jb) => setJob(jb.prop), "Select");
+      button.className += "jobs-select-button";
+      jobDiv.appendChild(button);
     }
   };
 
@@ -58,17 +58,23 @@ export const jobs = {
     prop: "child",
     description: "You are child with no specific strengths.",
     level: { level: 1, exp: 0, expNeeded: 1.1 },
+    requirements: [],
     tier: 1,
-    skillPoints: 0,
-    skills: [{
-      type: 'onRest',
-      label: 'Pliable',
-      cost: 1,
-      unlocked: true,
-      func: () => {addJobExp((getJob().level.expNeeded * 0.001 + 0.003))},
-      flavor: "A child's experience takes hold after rest",
-      description: 'Gain a small amount of class exp when during rest'
-    }],
+    skillPoints: 1,
+    skills: [
+      {
+        type: "onRest",
+        label: "Pliable",
+        key: 'pliable',
+        cost: 1,
+        unlocked: true,
+        func: () => {
+          addJobExp(getJob().level.expNeeded * 0.001 + 0.003);
+        },
+        flavor: "A child's experience takes hold after rest",
+        description: "Gain 0.1% of your exp to level per rest tick.",
+      },
+    ],
     attack: {
       speed: 15,
       criticalDamage: 1.5,
@@ -85,7 +91,10 @@ export const jobs = {
     prop: "urchin",
     description: "As an urchin you have fend for yourself. Your strength and speed will be your only allies.",
     level: { level: 1, exp: 0, expNeeded: 1.1 },
+    requirements: [{ type: "job", name: "child", level: 10 }],
     skillPoints: 0,
+    skills: [
+    ],
     tier: 2,
     attack: {
       speed: 15,
@@ -103,7 +112,30 @@ export const jobs = {
     prop: "student",
     description: "A student of the world, a young mind to be molded.",
     level: { level: 1, exp: 0, expNeeded: 1.1 },
+    requirements: [{ type: "job", name: "child", level: 10 }],
     skillPoints: 0,
+    skills: [
+      {
+        type: "onKill",
+        label: "Observant",
+        key: 'observant',
+        cost: 2,
+        unlocked: true,
+        func: (enemy) => {
+          // Base exp bonus, and a percentage
+          const baseExpBonus = 0.1;
+          const percentageExpBonus = (getAttr("int").level / 4) * 0.01; // boost exp by 1/4% of you intellegence
+          const base = enemy.reward.exp * baseExpBonus;
+          const percent = enemy.reward.exp * percentageExpBonus;
+
+          console.log(`Gained ${enemy.reward.exp} + ${base + percent}`);
+
+          addJobExp(base + percent);
+        },
+        flavor: "A blow to the body, is a trove to the mind.",
+        description: "Gain 1/4 of your intelligence as a percentage class exp bonus on kill.",
+      },
+    ],
     tier: 2,
     attack: {
       speed: 20,

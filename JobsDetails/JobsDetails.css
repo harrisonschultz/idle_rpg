@@ -1,77 +1,88 @@
 #character-sheet {
-  display: flex;
-  flex-direction: column;
+   display: flex;
+   flex-direction: column;
 }
 
 .attributes {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
+   margin-top: 10px;
+   margin-bottom: 10px;
+   display: flex;
+   flex-direction: column;
 }
 
 .attribute {
-  display: flex;
-  flex-direction: column;
+   display: flex;
+   flex-direction: column;
 }
 
 .attribute-details {
-  display: flex;
+   display: flex;
 }
 
-
 .bar {
-  flex: 1;
-  display: flex;
-  padding: 3px 0px;
+   flex: 1;
+   display: flex;
+   padding: 3px 0px;
 }
 
 .max-value {
-  width: 80px;
-  text-align: end;
+   width: 80px;
+   text-align: end;
 }
 
 .attribute-label {
-  width: 140px;
+   width: 140px;
 }
 
 #job-title {
-  color: #78DCE8;
-  font-size: 13px;
-  padding-bottom: 6px;
+   color: #78dce8;
+   font-size: 13px;
+   padding-bottom: 6px;
 }
 
 .attribute-value {
-  width: 80px;
-  text-align: end;
-  margin-left: auto;
+   width: 80px;
+   text-align: end;
+   margin-left: auto;
 }
 
 #job-skill-points-value {
-  margin-left: auto;
+   margin-left: auto;
 }
 
 .job-attack-details {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 5px 0px 2px 0px;
+   display: flex;
+   flex-wrap: wrap;
+   margin: 5px 0px 2px 0px;
 }
 
 .job-skill-points {
-  display: flex;
-  margin-top: 3px;
-  font-size: 13px;
+   display: flex;
+   font-size: 18px;
+}
+
+.skill-info {
+   display: flex;
+}
+
+.skill-cost {
+   margin-left: auto;
+}
+
+.tooltip {
+   display: flex;
+   position: absolute;
+   z-index: 1;
 }
 
 .job-icon {
-  font-size: 18px;
-  margin-right: 3px;
+   font-size: 18px;
+   margin-right: 3px;
 }
 
 .job-attack-detail-container {
-  display: flex;
-  align-items: center;
-  margin: 3px 0px;
-  width: 50%;
+   display: flex;
+   align-items: center;
+   margin: 3px 0px;
+   width: 50%;
 }
-

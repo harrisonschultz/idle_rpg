@@ -11,6 +11,7 @@ import {
   getStat,
   setAction,
   addJobExp,
+  useSkills,
 } from "../Character/Character.js";
 import { getRandomEnemy } from "../Adventure/Adventure.js";
 import {
@@ -135,6 +136,7 @@ function playerDeath() {
 }
 
 function awardPlayer(enemy) {
+  useSkills("onKill", enemy)
   addJobExp(enemy.reward.exp);
 }
 
