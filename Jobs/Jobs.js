@@ -1,7 +1,8 @@
-import { getJob, getJobs, setJob, getJobProgress } from "../Character/Character.js";
+import { getJob, getJobs, setJob, getJobProgress, addJobExp } from "../Character/Character.js";
 import { ProgressBar } from "../components/ProgressBar/ProgressBar.js";
 import { theme } from "../theme.js";
 import { JobsDetails } from "../JobsDetails/JobsDetails.js";
+import { Button } from "../components/Button/Button.js";
 
 export class JobsList extends HTMLElement {
   constructor() {
@@ -40,10 +41,8 @@ export class JobsList extends HTMLElement {
       jobDiv.appendChild(jobProgress);
       jobTiers[job.tier - 1].appendChild(jobDiv)
 
-      const button = document.createElement('button')
-      button.className = 'jobs-select-button'
-      button.innerHTML = 'Select'
-      button.onclick = () => setJob(j);
+      const button = new Button(job, 'jobs', (jb) => setJob(jb.prop), 'Select')
+      button.className += 'jobs-select-button'
       jobDiv.appendChild(button)
     }
   };
@@ -61,6 +60,15 @@ export const jobs = {
     level: { level: 1, exp: 0, expNeeded: 1.1 },
     tier: 1,
     skillPoints: 0,
+    skills: [{
+      type: 'onRest',
+      label: 'Pliable',
+      cost: 1,
+      unlocked: true,
+      func: () => {addJobExp((getJob().level.expNeeded * 0.001 + 0.003))},
+      flavor: "A child's experience takes hold after rest",
+      description: 'Gain a small amount of class exp when during rest'
+    }],
     attack: {
       speed: 15,
       criticalDamage: 1.5,

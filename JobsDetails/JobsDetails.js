@@ -5,11 +5,11 @@ import { theme } from '../theme.js';
 import { jobs } from '../Jobs/Jobs.js'
 
 export class JobsDetails extends HTMLElement {
-  constructor(job, self = false) {
+  constructor(job, options) {
     super();
 
     this.job = job || getJob();
-    this.self = self;
+    this.options = options
 
     document.addEventListener('job-changed', this.render)
     document.addEventListener('job-level', this.render)
@@ -44,7 +44,7 @@ export class JobsDetails extends HTMLElement {
   };
 
   render = () => {
-    if (this.self) {
+    if (this.options && this.options.self) {
       this.job = getJob()
     }
 

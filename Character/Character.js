@@ -58,7 +58,7 @@ const AGI_STAMINA_MODIFIER = 1;
       }
 
       // Job details
-      const jobDetails = new JobsDetails(undefined, true)
+      const jobDetails = new JobsDetails(undefined, {self: true})
       this.shadowRoot.getElementById("character-jobs-details").appendChild(jobDetails)
 
       // Attribute bars
@@ -272,6 +272,22 @@ export function getSecondaryAttribute(prop, char = window.player) {
   return getSecondaryAttributeValue(attr.attributes, char);
 }
 
+export function getSkills() {
+  return window.player.skills
+}
+
+export function useSkills(type, data) {
+  const skills = getSkills()
+
+  for (const skill of skills) {
+    if (skill.type === type) {
+      data = skill.func(data)
+    }
+  }
+
+  return data
+}
+
 export function getSecondaryAttributeValue(attrs, char = window.player) {
   let value = 0;
   for (const a of attrs) {
@@ -356,6 +372,8 @@ export function rest() {
   if (statsComplete.length === Object.keys(window.player.stats).length) {
     setAction(window.player.prevAction);
   }
+
+  useSkills('onRest');
 
   statChange();
 }

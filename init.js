@@ -1,4 +1,5 @@
 import { jobs } from "./Jobs/Jobs.js"
+import { getJob, getJobs, setJob, getJobProgress, addJobExp } from "../Character/Character.js";
 
 export function initialize() {
   window.player = {
@@ -19,10 +20,10 @@ export function initialize() {
 
     jobs: jobs,
 
-    skillPoints: {},
-
     adventure: undefined,
     adventures: [],
+
+    skills: [],
 
     stats: {
       health: { current: 1, max: 1 },

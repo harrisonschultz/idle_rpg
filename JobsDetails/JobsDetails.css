@@ -65,10 +65,12 @@
 
 .job-icon {
   font-size: 18px;
+  margin-right: 3px;
 }
 
 .job-attack-detail-container {
-
+  display: flex;
+  align-items: center;
   margin: 3px 0px;
   width: 50%;
 }
