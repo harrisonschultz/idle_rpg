@@ -22,7 +22,7 @@ export function initialize() {
 
     adventure: undefined,
     adventures: [],
-
+    effects: [],
     skills: [],
     skillsUnlocked: [],
 

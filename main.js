@@ -17,6 +17,9 @@ async function main() {
   while (true) {
     tick++;
 
+    // Tick buffs
+    elapseTime()
+
     // perform selected action
     performAction(tick);
 

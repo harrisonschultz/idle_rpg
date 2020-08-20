@@ -278,7 +278,6 @@ export function getSkills() {
 }
 
 export function isSkillEquipped(skill) {
-  
    return !!window.player.skills.find((s) => s.key === skill.key);
 }
 
@@ -303,7 +302,7 @@ export function isSkillLimitReached() {
 export function equipSkill(skill) {
    console.log("eqip");
    if (!isSkillEquipped(skill) && !isSkillLimitReached()) {
-      window.player.skills.push(skill)
+      window.player.skills.push(skill);
    }
    skillEquipped();
 }
@@ -313,7 +312,7 @@ export function purchaseSkill(job, skill) {
       window.player.skillsUnlocked.push(skill.key);
 
       // Auto Equip if not maxed on skills
-      equipSkill(skill)
+      equipSkill(skill);
    }
 
    skillUnlocked();
@@ -325,13 +324,13 @@ export function isClassUnlocked(job) {
 }
 
 export function checkRequirements(job) {
-   console.log(job);
    for (const req of job.requirements) {
+      console.log(getAnyJob(req.name));
       switch (req.type) {
          case "job":
-            if (!getAnyJob(req.name).level >= req.level) return false;
+            if (!(getAnyJob(req.name).level.level >= req.level)) return false;
          case "attribute":
-            if (!getAttr(req.name).level >= req.level) return false;
+            if (!(getAttr(req.name).level >= req.level)) return false;
          default:
             break;
       }
@@ -340,6 +339,19 @@ export function checkRequirements(job) {
 }
 
 export function useSkills(type, data) {
+   const skills = getSkills();
+
+   for (const skill of skills) {
+      if (skill.type === type) {
+         data = skill.func(data);
+      }
+   }
+
+   return data;
+}
+
+
+export function applyEffects(type, data) {
    const skills = getSkills();
 
    for (const skill of skills) {
@@ -488,6 +500,24 @@ export function setAdventure(adv) {
    window.player.adventure = { ...adv };
    adventureChanged();
    adventureProgress();
+}
+
+export function elapseTime(char = window.player) {
+   for (const eff of char.effects) {
+      if (eff.duration <= 0) {
+         removeEffect(eff, char);
+      } else {
+         eff.duration--;
+      }
+   }
+}
+
+export function removeEffect(effect, char = window.player) {
+   char.effects = char.effects.filter((eff) => eff.key !== effect.key);
+}
+
+export function addEffect(effect) {
+   window.player.effects.push(effect);
 }
 
 export function actionChange(data = {}) {

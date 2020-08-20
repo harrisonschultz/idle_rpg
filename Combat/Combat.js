@@ -201,6 +201,7 @@ export function rollForOnHits(damage, attacker, defender) {
 
   // Check for dodge
   if (dodgeRoll <= dodgeChance) {
+    useSkills('onDodge', {damage, attacker, defender})
     finalDmg = 0;
   }
 
