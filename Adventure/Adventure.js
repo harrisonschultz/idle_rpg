@@ -106,7 +106,9 @@ export function getNextEnemy(adventure) {
   } else {
     return getRandomEnemy(adventure)
   }
+
 }
+
 
 export function getRandomEnemy(adventure) {
   const rand = Math.floor(Math.random() * adventure.enemies.length);

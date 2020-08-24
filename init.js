@@ -1,12 +1,12 @@
 import { jobs } from "./Jobs/Jobs.js";
-import { addEffect } from "./Character/Character.js";
+import { addEffect, getAnyJob } from "./Character/Character.js";
 import { effects } from "./effects.js";
 import { load } from "./core.js";
 
 export function initialize() {
-   const state = load()
+   const state = load();
    if (state) {
-     window.player = state
+      window.player = state;
    } else {
       window.player = {
          prevAction: "rest",
@@ -15,11 +15,11 @@ export function initialize() {
          tab: "Train",
 
          attrs: {
-            agi: { label: "Agility", level: 1, exp: 0, expNeeded: 1.1 },
-            int: { label: "Intelligence", level: 1, exp: 0, expNeeded: 1.1 },
+            agi: { label: "Agility", level: 10, exp: 0, expNeeded: 1.1 },
+            int: { label: "Intelligence", level: 15, exp: 0, expNeeded: 1.1 },
             lck: { label: "Luck", level: 1, exp: 0, expNeeded: 1.1 },
             per: { label: "Perception", level: 1, exp: 0, expNeeded: 1.1 },
-            str: { label: "Strength", level: 1, exp: 0, expNeeded: 1.1 },
+            str: { label: "Strength", level: 10, exp: 0, expNeeded: 1.1 },
          },
 
          job: "child",
