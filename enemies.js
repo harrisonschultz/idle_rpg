@@ -95,6 +95,38 @@ export const enemies = {
       stamina: { current: 1, max: 1 },
       mana: { current: 1, max: 1 },
     },
+    reward: { exp: 0.9 },
+  },
+
+  smurf: {
+    prop: "smurf",
+    label: "Smurf",
+    description: "This person has completed checked out.",
+    attrs: {
+      agi: { label: "Agility", level: 1, exp: 0, expNeeded: 0 },
+      int: { label: "Intelligence", level: 3, exp: 0, expNeeded: 0 },
+      lck: { label: "Luck", level: 1, exp: 0, expNeeded: 0 },
+      per: { label: "Perception", level: 2, exp: 0, expNeeded: 0 },
+      str: { label: "Strength", level: 1, exp: 0, expNeeded: 0 },
+    },
+
+    job: "smurf",
+    jobs: {
+      smurf: {
+        attack: {
+          speed: 29, // Speed in game ticks to attack again.
+          criticalDamage: 2.5,
+          dmgModifiers: [{ name: "int", modifier: 2 }, { name: "per", modifier: 1 }],
+          variance: 0.15, // gives attacks a range of damage by 10% either up or down.
+        },
+      },
+    },
+
+    stats: {
+      health: { current: 30, max: 30 },
+      stamina: { current: 1, max: 1 },
+      mana: { current: 1, max: 1 },
+    },
     reward: { exp: 0.3 },
   },
 };

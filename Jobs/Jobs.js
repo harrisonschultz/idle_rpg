@@ -93,6 +93,48 @@ export const jobs = {
             flavor: "A child's experience takes hold after rest",
             description: "Gain 0.1% of your exp to level per rest tick.",
          },
+         // {
+         //    type: "onAttack",
+         //    label: "Pliable",
+         //    key: "pliable",
+         //    cost: 2,
+         //    unlocked: true,
+         //    func: () => {
+         //       addJobExp(getJob().level.expNeeded * 0.001 + 0.003);
+         //    },
+         //    attack: {
+         //       speed: 15,
+         //       criticalDamage: 1.5,
+         //       dmgModifiers: [
+         //          { name: "str", modifier: 0.3 },
+         //          { name: "agi", modifier: 0.3 },
+         //       ],
+         //       variance: 0.1, // gives attacks a range of damage by 10% either up or down.
+         //    },
+         //    flavor: "A life built on the shoulders of others.",
+         //    description: "Gain experience when striking an enemy based on their attack stats.",
+         // },
+         {
+            type: "attack",
+            label: "Pliable",
+            key: "pliable",
+            cost: 2,
+            unlocked: true,
+            func: () => {
+               addJobExp(getJob().level.expNeeded * 0.001 + 0.003);
+            },
+            attack: {
+               speed: 15,
+               criticalDamage: 1.5,
+               dmgModifiers: [
+                  { name: "str", modifier: 0.3 },
+                  { name: "agi", modifier: 0.3 },
+               ],
+               variance: 0.1, // gives attacks a range of damage by 10% either up or down.
+            },
+            flavor: "A life built on the shoulders of others.",
+            description: "Gain experience when striking an enemy based on their attack stats.",
+         },
       ],
       attack: {
          speed: 15,
@@ -155,7 +197,7 @@ export const jobs = {
             func: (enemy) => {
                // Base exp bonus, and a percentage
                const baseExpBonus = 0.1;
-               const percentageExpBonus = (getAttr("int").level / 4) * 0.01; // boost exp by 1/4% of you intellegence
+               const percentageExpBonus = (getAttr("int").level / 2) * 0.01; // boost exp by 1/2% of your intellegence
                const base = enemy.reward.exp * baseExpBonus;
                const percent = enemy.reward.exp * percentageExpBonus;
 
@@ -164,7 +206,7 @@ export const jobs = {
                addJobExp(base + percent);
             },
             flavor: "A blow to the body, is a trove to the mind.",
-            description: "Gain 1/4 of your intelligence as a percentage class exp bonus on kill.",
+            description: "Gain 1/2 of your intelligence as a percentage class exp bonus on kill.",
          },
       ],
       tier: 2,

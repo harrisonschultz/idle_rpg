@@ -13,11 +13,13 @@ import {
    addJobExp,
    useSkills,
    isPlayer,
+   determineAttack,
    applyEffects,
    addAttrExp,
    secondaryAttributes,
+   resetAdventure,
 } from "../Character/Character.js";
-import { getRandomEnemy } from "../Adventure/Adventure.js";
+import { getNextEnemy } from "../Adventure/Adventure.js";
 import { messageAttack, messageDeath, messageBasic, messageAttackCritical } from "./LogMessages/logMessages.js";
 
 const LOG_MAX = 50;
@@ -82,7 +84,7 @@ export function fight(tick) {
    const adventure = getAdventure();
    // Get a random enemy from the current adventure
    if (!adventure.currentEnemy) {
-      setCurrentEnemy(getRandomEnemy(adventure));
+      setCurrentEnemy(getNextEnemy(adventure));
       setCombatStartTick(tick);
    }
 
@@ -110,13 +112,20 @@ export function fight(tick) {
 
       // Check for player death
       if (getStat("health").current <= 0) {
-         logDeath(window.player);
+         logDeath(window.player.label);
+         playerDeath()
       }
    }
 }
 
+function playerDeath() {
+   setAction('rest')
+   resetAdventure()
+}
+
 function attack(attacker, defender) {
-   let intialDamage = calculateDamage(getJob(attacker).attack, attacker, defender);
+   const attack = determineAttack(attacker);
+   const intialDamage = calculateDamage(attack, attacker, defender);
    const attackSummary = rollForOnHits(intialDamage, attacker, defender);
 
    logAttackItem(attackSummary.damage, attacker, defender, attackSummary);
@@ -148,7 +157,7 @@ function logAttackItem(damage, attacker, defender, attackSummary) {
 function awardPlayerForAttack(player, defender) {
    const job = getJob(player);
    for (const attr of job.attack.dmgModifiers) {
-      const exp = attr.modifier * defender.reward.exp;
+      const exp = attr.modifier * defender.reward.exp / 2;
       addAttrExp(attr.name, exp);
    }
 }
@@ -171,11 +180,9 @@ function awardPlayerForBeingHit(attackSummary, player, defender) {
 }
 
 function deriveFromSecondaryAttributes(secondAttr, defender) {
-   console.log(secondAttr)
    for (const attr of secondAttr.attributes) {
       if (attr.name !== "lck") {
-         const exp = attr.modifier * defender.reward.exp * 10000;
-         console.log(`Giving ${attr.name} ${exp} exp`)
+         const exp = attr.modifier * defender.reward.exp / 2;
          addAttrExp(attr.name, exp);
       }
    }
@@ -216,7 +223,7 @@ export function calculateDamage(attack, attacker, defender) {
    let finalDmg;
 
    for (const attr of attack.dmgModifiers) {
-      baseDmg += getAttr(attr.name).level * attr.modifier;
+      baseDmg += getAttr(attr.name, attacker).level * attr.modifier;
    }
 
    // Add variance

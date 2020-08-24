@@ -336,8 +336,11 @@ export function getSecondaryAttribute(prop, char = window.player) {
    return getSecondaryAttributeValue(attr, char);
 }
 
-export function getSkills() {
-   return window.player.skills;
+export function getSkills(char = window.player, type = undefined) {
+   if (type && char.skills) {
+      return char.skills.filter((skill) => type === skill.type);
+   }
+   return char.skills;
 }
 
 export function isSkillEquipped(skill) {
@@ -554,6 +557,7 @@ export function resetAdventure() {
    if (window.player.adventure) {
       window.player.adventure.currentEnemy = undefined;
       window.player.adventure.progress.current = 0;
+      adventureProgress();
    }
 }
 
@@ -563,6 +567,38 @@ export function getAdventure() {
 
 export function getAdventureProgress() {
    return window.player.adventure.progress;
+}
+
+export function determineAttack(char = window.player) {
+   const skills = getSkills(char, "attack") || [];
+   const readySkills = []; // Store attacks that can be used.
+
+   for (const skl of skills) {
+      if (isSkillReady(skl, char)) {
+         readySkills.push(skl);
+      }
+   }
+
+   // Randomly choose one? I guess for now.
+   return readySkills[Math.floor(Math.random() * readySkills.length)];
+}
+
+export function isSkillReady(skill, char = window.player) {
+   let ready = true;
+
+   if (skill.isReady && !skill.isReady()) {
+      return false;
+   }
+
+   if (skill.readyConditions) {
+      for (const condition of skill.readyConditions) {
+         if (condition.type === "stat" && getStat(condition.name, char).current >= condition.need) {
+            return false;
+         }
+      }
+   }
+
+   return ready;
 }
 
 export function addAdventureProgress(val) {
