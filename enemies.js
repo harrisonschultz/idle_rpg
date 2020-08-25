@@ -24,7 +24,7 @@ export const enemies = {
       },
 
       stats: {
-         health: { current: 12, max: 12 },
+         health: { current: 22, max: 22 },
          stamina: { current: 1, max: 1 },
          mana: { current: 1, max: 1 },
       },
@@ -60,7 +60,7 @@ export const enemies = {
       },
 
       stats: {
-         health: { current: 8, max: 8 },
+         health: { current: 18, max: 18 },
          stamina: { current: 1, max: 1 },
          mana: { current: 1, max: 1 },
       },
@@ -93,7 +93,7 @@ export const enemies = {
       },
 
       stats: {
-         health: { current: 10, max: 10 },
+         health: { current: 32, max: 32 },
          stamina: { current: 1, max: 1 },
          mana: { current: 1, max: 1 },
       },
@@ -129,7 +129,7 @@ export const enemies = {
       },
 
       stats: {
-         health: { current: 30, max: 30 },
+         health: { current: 64, max: 64 },
          stamina: { current: 1, max: 1 },
          mana: { current: 1, max: 1 },
       },

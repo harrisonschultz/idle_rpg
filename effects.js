@@ -1,4 +1,4 @@
-import { secondaryAttributes, getAnyJob } from "./Character/Character.js";
+import { secondaryAttributes, getAnyJob, getStat, setStat } from "./Character/Character.js";
 
 export const effects = {
    opportunistic: {
@@ -7,22 +7,18 @@ export const effects = {
       type: "criticalChance",
       func: (data) => 100,
       duration: 25,
+      durationOnRefresh: 25
    },
    flameLash: {
       label: "Flame Lash",
       key: "flameLash",
-      type: "stat",
-      func: (data) => {
-         const { stat, char } = data;
-         if (stat.key === "health") {
-            console.log(
-               "Losing health",
-               `${stat.current}/${stat.max} ${stat.current - stat.max * getAnyJob("student").level.level}`
-            );
-            // Lose 1% health per tick
-            return stat.current - stat.max * getAnyJob("student").level.level;
-         }
+      type: "overTime",
+      func: ({char}) => {
+         const stat = getStat("health", char);
+         stat.current = stat.current - stat.max * 0.001 * getAnyJob("student").level.level;
+         setStat("health", stat, char);
       },
       duration: 80,
+      durationOnRefresh: 80
    },
 };

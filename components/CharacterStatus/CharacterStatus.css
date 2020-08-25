@@ -65,14 +65,19 @@
    margin-top: 4px;
 }
 
+.bars-container {
+   display: flex;
+   flex-direction: column;
+   height: 120px;
+}
+
 .attribute-details {
    display: flex;
 }
 
 .bar {
-   flex: 1;
    display: flex;
-   padding: 3px 0px;
+   padding: 5px 0px;
 }
 
 .max-value {

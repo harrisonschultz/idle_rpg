@@ -78,7 +78,7 @@ export const jobs = {
       label: "Child",
       prop: "child",
       description: "You are child with no specific strengths.",
-      level: { level: 10, exp: 0, expNeeded: 1.1 },
+      level: { level: 1, exp: 0, expNeeded: 1.1 },
       requirements: [],
       tier: 1,
       skillPoints: 0,
@@ -164,7 +164,7 @@ export const jobs = {
             levelNeeded: 4,
             cost: [{ type: "stat", name: "stamina", value: -4 }],
             cooldown: 10,
-            func: (damage, attack) => {
+            func: ({ damage, attack, attacker, defender }) => {
                return {
                   secondaryAttributes: [
                      {
@@ -202,7 +202,7 @@ export const jobs = {
       label: "Student",
       prop: "student",
       description: "A student of the world, a young mind to be molded.",
-      level: { level: 10, exp: 0, expNeeded: 1.1 },
+      level: { level: 1, exp: 0, expNeeded: 1.1 },
       requirements: [
          { type: "job", name: "child", level: 10 },
          { type: "attribute", name: "int", level: 13 },

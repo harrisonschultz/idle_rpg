@@ -48,20 +48,39 @@ export class Combat extends HTMLElement {
 
    initialRender = () => {
       const container = this.shadowRoot.getElementById("combat-container");
+      const playerStatus = new CharacterStatus();
+      playerStatus.id = "player-container";
+      playerStatus.className = "status";
+      container.appendChild(playerStatus);
+
+      const log = document.createElement("div");
+      log.id = "log";
+      container.appendChild(log);
+
+      const enemyDiv = document.createElement("div");
+      container.appendChild(enemyDiv);
    };
 
    renderEnemy = () => {
       const container = this.shadowRoot.getElementById("combat-container");
 
-      // Remove previous enemy container
+      // Hide previous enemy container
       const enemyContainer = this.shadowRoot.getElementById("enemy-container");
+      if (enemyContainer) {
+         enemyContainer.style.display = "none";
+         enemyContainer.id = undefined;
+      }
+
+      // Show New Container
+      const enemyStatus = new CharacterStatus(getCurrentEnemy());
+      enemyStatus.id = "enemy-container";
+      enemyStatus.className = "status";
+      container.appendChild(enemyStatus);
+
+      // Delete old container
       if (enemyContainer) {
          container.removeChild(enemyContainer);
       }
-
-      const enemyStatus = new CharacterStatus(getCurrentEnemy());
-      enemyStatus.id = "enemy-container";
-      container.appendChild(enemyStatus);
    };
 
    appendToLog = (data) => {
@@ -137,21 +156,21 @@ export function fight(tick) {
    }
 }
 
-function playerDeath() {
+export function playerDeath() {
    setAction("rest");
    resetAdventure();
 }
 
-function getAttackBonuses(damage, attack) {
+function getAttackBonuses(damage, attack, attacker, defender ) {
    if (attack && attack.func) {
-      return attack.func(damage, attack);
+      return attack.func({ damage, attack, attacker, defender });
    }
 }
 
 function attack(attacker, defender) {
    const { attack, skill } = determineAttack(attacker);
    const initialDamage = calculateDamage(attack, attacker, defender);
-   const attackBonuses = getAttackBonuses(initialDamage, skill);
+   const attackBonuses = getAttackBonuses(initialDamage, skill, attacker, defender);
    const attackSummary = rollForOnHits(initialDamage, attackBonuses, attack, attacker, defender);
 
    logAttackItem(attackSummary.damage, attacker, defender, attackSummary);
@@ -160,7 +179,7 @@ function attack(attacker, defender) {
    if (isPlayer(attacker)) {
       awardPlayerForAttack(attacker, defender);
    } else {
-      useSkills("whenHit", { attack, attacker, defender });
+      useSkills("whenHit", { initialDamage, attack, attacker, defender });
       awardPlayerForBeingHit(attackSummary, defender, attacker);
    }
 
@@ -215,7 +234,7 @@ function deriveFromSecondaryAttributes(secondAttr, defender) {
    }
 }
 
-function enemyDefeated(currentEnemy) {
+export function enemyDefeated(currentEnemy) {
    awardPlayer(currentEnemy);
 
    logDeath(currentEnemy.label);

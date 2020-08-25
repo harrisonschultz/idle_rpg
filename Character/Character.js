@@ -3,6 +3,7 @@ import { theme } from "../theme.js";
 import { adventures } from "../Adventure/Adventure.js";
 import { JobsDetails } from "../JobsDetails/JobsDetails.js";
 import { CharacterStatus } from "../components/CharacterStatus/CharacterStatus.js";
+import { playerDeath, enemyDefeated } from "../Combat/Combat.js";
 
 const STR_HEALTH_MODIFIER = 1;
 const INT_MANA_MODIFIER = 1;
@@ -146,8 +147,8 @@ export function getStat(stat, char = window.player) {
    return char.stats[stat];
 }
 
-export function setStat(stat, statData) {
-   window.player.stats[stat] = statData;
+export function setStat(stat, statData, char = window.player) {
+   char.stats[stat] = statData;
    statChange();
 }
 
@@ -168,13 +169,8 @@ export function enemyChanged(data = {}) {
 }
 
 export function addStatCurrent(stat, value, char = window.player) {
-   const baseValue = char.stats[stat].current + value;
+   char.stats[stat].current = char.stats[stat].current + value;
 
-   char.stats[stat].current =
-      applyEffects("stat", {
-         stat: { key: stat, current: baseValue, max: char.stats[stat].max },
-         char,
-      }) || baseValue;
    if (char.stats[stat].current > char.stats[stat].max) {
       char.stats[stat].current = char.stats[stat].max;
    } else if (char.stats[stat].current < 0) {
@@ -184,18 +180,38 @@ export function addStatCurrent(stat, value, char = window.player) {
 }
 
 export function subtractStatCurrent(stat, value, char = window.player) {
-   const baseValue = char.stats[stat].current - value;
-   char.stats[stat].current =
-      applyEffects("stat", {
-         stat: { key: stat, current: baseValue, max: char.stats[stat].max },
-         char,
-      }) || baseValue;
+   char.stats[stat].current = char.stats[stat].current - value;
 
    if (char.stats[stat].current > char.stats[stat].max) {
       char.stats[stat].current = char.stats[stat].max;
    } else if (char.stats[stat].current < 0) {
       char.stats[stat].current = 0;
    }
+   statChange();
+}
+
+export function applyOverTimeEffects(char) {
+   applyEffects(
+      "overTime",
+      {
+         char,
+      },
+      char
+   );
+
+   const adventure = getAdventure();
+   if (adventure && adventure.currentEnemy) {
+      // Check for enemy death
+      if (getStat("health", adventure.currentEnemy).current <= 0) {
+         enemyDefeated(char);
+      }
+   }
+
+   // Player death
+   if (getStat("health").current <= 0) {
+      playerDeath();
+   }
+
    statChange();
 }
 
@@ -364,7 +380,7 @@ export function isPlayer(char) {
 }
 
 export function getEffects(char = window.player) {
-   return char.effects
+   return char.effects;
 }
 
 export function getEffect(effect, char = window.player) {
@@ -610,12 +626,20 @@ export function setAdventure(adv) {
    adventureProgress();
 }
 
-export function elapseTime(char = window.player) {
-   for (const eff of char.effects) {
-      if (eff.duration <= 0) {
-         removeEffect(eff, char);
-      } else {
-         eff.duration--;
+export function elapseTime() {
+   const chars = [window.player];
+   const adventure = getAdventure();
+   if (adventure && adventure.currentEnemy) {
+      chars.push(adventure.currentEnemy);
+   }
+   for (const char of chars) {
+      for (const eff of char.effects) {
+         applyOverTimeEffects(char);
+         if (eff.duration <= 0) {
+            removeEffect(eff, char);
+         } else {
+            eff.duration--;
+         }
       }
    }
    timeElapsed();
@@ -627,7 +651,12 @@ export function removeEffect(effect, char = window.player) {
 }
 
 export function addEffect(effect, char = window.player) {
-   char.effects.push({ ...effect });
+   const found = char.effects.find((e) => e.key === effect.key);
+   if (found) {
+      found.duration = found.durationOnRefresh;
+   } else {
+      char.effects.push({ ...effect });
+   }
    statusChanged();
 }
 

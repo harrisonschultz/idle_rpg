@@ -15,6 +15,7 @@ export class CharacterStatus extends HTMLElement {
    constructor(char = window.player) {
       super();
       this.char = char;
+      this.statBars = [];
    }
 
    async connectedCallback() {
@@ -33,6 +34,17 @@ export class CharacterStatus extends HTMLElement {
       this.initialRender();
    }
 
+   switchChar = (char) => {
+      this.char = char
+      this.renderBuffs()
+      this.render()
+
+      // Switch progress bar
+      for (const bar of this.statBars) {
+         bar.changeGetter(() => getStat(bar.label, char))
+      }
+   }
+
    initialRender = () => {
       const statsColors = {
          health: theme.colors.pastelRed,
@@ -43,21 +55,24 @@ export class CharacterStatus extends HTMLElement {
 
       // Stat bars
       const statusContainer = this.shadowRoot.getElementById("character-status");
+      const barsContainer = document.createElement("div");
+      barsContainer.className = "bars-container";
       for (const s in getStats(this.char)) {
          const statBar = new ProgressBar("stat-changed", () => getStat(s, this.char), statsColors[s], {
             label: s,
             value: true,
          });
          statBar.className = "bar";
-         statusContainer.appendChild(statBar);
+         barsContainer.appendChild(statBar);
+         this.statBars.push(statBar)
       }
+      statusContainer.appendChild(barsContainer);
 
       // Status (Buffs/Debuffs)
       const buffsContainer = document.createElement("div");
-      buffsContainer.id = "buffs-container";
       const titleContainer = document.createElement("div");
+      buffsContainer.id = "buffs-container";
       titleContainer.className = "title";
-      titleContainer.innerHTML = "Buffs";
 
       for (const eff of getEffects(this.char)) {
          const effDiv = document.createElement("div");
@@ -82,7 +97,7 @@ export class CharacterStatus extends HTMLElement {
    };
 
    renderBuffs = () => {
-      const effects = getEffects();
+      const effects = getEffects(this.char);
       const buffsContainer = this.shadowRoot.getElementById("buffs-container");
 
       // Remove expired buffs
