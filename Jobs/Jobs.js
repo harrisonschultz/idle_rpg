@@ -89,7 +89,7 @@ export const jobs = {
             key: "pliable",
             levelNeeded: 5,
             func: () => {
-               addJobExp(getJob().level.expNeeded * (0.0001 * getAnyJob("child").level) + 0.003);
+               addJobExp(getJob().level.expNeeded * (0.0001 * getAnyJob("child").level.level) + 0.003);
             },
             flavor: "A child's experience takes hold after rest",
             description: "Gain 0.1% of your exp to level per rest tick.",

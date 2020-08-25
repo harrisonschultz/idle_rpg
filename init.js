@@ -28,6 +28,7 @@ export function initialize() {
 
          adventure: undefined,
          adventures: [],
+         completedAdventures: [],
          effects: [],
          skills: [],
          skillsUnlocked: [],
