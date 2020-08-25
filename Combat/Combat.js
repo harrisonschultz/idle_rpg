@@ -58,7 +58,7 @@ export class Combat extends HTMLElement {
       container.appendChild(log);
 
       const enemyDiv = document.createElement("div");
-      enemyDiv.id = 'enemy-parent'
+      enemyDiv.id = "enemy-parent";
       container.appendChild(enemyDiv);
    };
 
@@ -328,7 +328,12 @@ export function rollForOnHits(damage, attackBonuses, attack, attacker, defender)
    isDodged = dodgeRoll <= dodgeChance;
 
    if (isCritical) {
-      finalDmg = finalDmg * attack.criticalDamage;
+      const effectData = applyEffects("onCritical", { damage: finalDmg, attack });
+      if (effectData) {
+         finalDmg = effectData;
+      } else {
+         finalDmg = finalDmg * attack.criticalDamage;
+      }
    }
 
    // Check for block
@@ -344,6 +349,12 @@ export function rollForOnHits(damage, attackBonuses, attack, attacker, defender)
    if (isDodged) {
       useSkills("onDodge", { damage, attacker, defender });
       finalDmg = 0;
+   }
+
+   const damageBonus = useSkills('onAttack', { damage, attack, attacker, defender } )
+
+   if (damageBonus.damage) {
+      finalDmg = damageBonus.damage
    }
 
    return { isCritical, isBlocked, isDodged, isDeflected, damage: finalDmg };

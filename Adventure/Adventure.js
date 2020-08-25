@@ -127,8 +127,6 @@ function checkNewAvailableActions() {
 }
 
 export function isAdventureCompleted(adventure) {
-  console.log(adventure)
-  console.log( window.player.completedAdventures.includes(adventure))
   return window.player.completedAdventures.includes(adventure)
 }
 
