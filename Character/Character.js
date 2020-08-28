@@ -243,10 +243,10 @@ export function getJob(char = window.player) {
 export function addJobExp(exp, level = false) {
    const job = getJob();
    // Higher tier jobs require more exp
-   const expMultiplier = job.tier * 3;
+   const expMultiplier = job.tier / 2;
 
    // Add exp and handle levels
-   const totalExpNeeded = 1 * Math.pow(1.1, job.level.level * expMultiplier);
+   const totalExpNeeded = 1 * Math.pow(1.09, job.level.level * expMultiplier);
    const currentExp = job.level.exp;
    const expLeft = totalExpNeeded - (exp + currentExp);
 
@@ -406,7 +406,7 @@ export function applyEffects(type, data, char = window.player) {
 export function getSecondaryAttributeValue(secondaryAttr, char = window.player) {
    let value = 0;
    for (const a of secondaryAttr.attributes) {
-      value += 1 * Math.pow(1.1, getAttr(a.name, char).level * a.modifier * 0.5)
+      value += 1 * Math.pow(1.09, getAttr(a.name, char).level * a.modifier * 0.5)
    }
 
    const appliedValue = applyEffects(secondaryAttr.key, value, char) || value;
@@ -426,7 +426,7 @@ export function addAttrExp(attr, exp, level = false) {
    const { attrs } = window.player;
 
    // Add exp and handle levels
-   const totalExpNeeded = 1 * Math.pow(1.1, attrs[attr].level);
+   const totalExpNeeded = 1 * Math.pow(1.09, attrs[attr].level);
    const currentExp = attrs[attr].exp;
    const expLeft = totalExpNeeded - (exp + currentExp);
 
