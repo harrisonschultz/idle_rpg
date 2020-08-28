@@ -204,7 +204,7 @@ export function applyOverTimeEffects(char) {
    if (adventure && adventure.currentEnemy) {
       // Check for enemy death
       if (getStat("health", adventure.currentEnemy).current <= 0) {
-         enemyDefeated(char);
+         enemyDefeated(adventure.currentEnemy);
       }
    }
 
@@ -406,7 +406,7 @@ export function applyEffects(type, data, char = window.player) {
 export function getSecondaryAttributeValue(secondaryAttr, char = window.player) {
    let value = 0;
    for (const a of secondaryAttr.attributes) {
-      value += getAttr(a.name, char).level * a.modifier;
+      value += 1 * Math.pow(1.1, getAttr(a.name, char).level * a.modifier * 0.5)
    }
 
    const appliedValue = applyEffects(secondaryAttr.key, value, char) || value;
