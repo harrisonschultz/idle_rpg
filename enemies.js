@@ -15,7 +15,7 @@ export const enemies = {
       jobs: {
          feeder: {
             attack: {
-               speed: 2, // Speed in game ticks to attack again.
+               speed: 20, // Speed in game ticks to attack again.
                criticalDamage: 1.5,
                dmgModifiers: [{ name: "int", modifier: 0.6 }],
                variance: 0.1, // gives attacks a range of damage by 10% either up or down.
@@ -120,7 +120,7 @@ export const enemies = {
                speed: 29, // Speed in game ticks to attack again.
                criticalDamage: 2.5,
                dmgModifiers: [
-                  { name: "int", modifier: 0.5 },
+                  { name: "int", modifier: 0.4 },
                   { name: "per", modifier: 0.3 },
                ],
                variance: 0.15, // gives attacks a range of damage by 10% either up or down.
