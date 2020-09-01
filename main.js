@@ -1,7 +1,7 @@
 import { initialize } from "./init.js";
 import { actions, Actions } from "./Actions/Actions.js";
 import { Combat, fight } from "./Combat/Combat.js";
-import { addAttrExp, modifyStat, rest, elapseTime } from "./Character/Character.js";
+import { addAttrExp, modifyStat, rest, elapseTime, regenerateStats } from "./Character/Character.js";
 import { TabMenu } from "./components/TabMenu/TabMenu.js";
 import { Adventure } from "./Adventure/Adventure.js";
 import { JobsList } from "./Jobs/Jobs.js";
@@ -19,6 +19,7 @@ async function main() {
     tick++;
 
     // Tick buffs
+    // Regen stats
     elapseTime()
 
     // perform selected action
