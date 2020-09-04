@@ -1,5 +1,6 @@
 import { effects } from "./effects.js";
 import { jobs } from "./Jobs/Jobs.js";
+import { TICK_RATE } from "./main.js";
 
 export function save() {
    window.localStorage.setItem("state", JSON.stringify(window.player));
@@ -57,4 +58,14 @@ export function load() {
    } else {
       return undefined;
    }
+}
+
+export function getValueInSeconds(numberOfTicks) {
+   const ticksPerSecond = 1000 / TICK_RATE;
+   return numberOfTicks / ticksPerSecond;
+}
+
+export function accumulateValueInSeconds(rate) {
+   const ticksPerSecond = 1000 / TICK_RATE;
+   return (rate * ticksPerSecond).toFixed(2);
 }

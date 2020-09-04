@@ -1,4 +1,6 @@
 import { isActionUnlocked } from "../../Actions/Actions.js";
+import { AttributeNames } from "../../enums/AttributeNames.js";
+import { accumulateValueInSeconds } from "../../core.js";
 
 export class PurchaseButton extends HTMLElement {
    constructor(item, prefix, onClick, onPurchase, options = {}) {
@@ -8,8 +10,7 @@ export class PurchaseButton extends HTMLElement {
       this.idPrefix = prefix;
       this.onClick = onClick;
       this.options = options;
-
-      document.addEventListener("gold-changed", this.render);
+      this.onPurchase = onPurchase;
    }
 
    async connectedCallback() {
@@ -22,6 +23,8 @@ export class PurchaseButton extends HTMLElement {
       const instance = HTMLTemplate.content.cloneNode(true);
       shadowRoot.appendChild(instance);
 
+      document.addEventListener("action-purchased", this.render);
+
       this.initialRender();
    }
 
@@ -30,9 +33,69 @@ export class PurchaseButton extends HTMLElement {
       const button = document.createElement("button");
       const tt = document.createElement("div");
 
+      // Create tooltip rewards
+      for (const attr of this.action.attrs) {
+         const attrDiv = document.createElement("div");
+         const labelDiv = document.createElement("div");
+         const valueDiv = document.createElement("div");
+
+         attrDiv.className = "tooltip-row ";
+         labelDiv.className = "tooltip-label";
+         valueDiv.className = "tooltip-value gain";
+         labelDiv.innerHTML = AttributeNames[attr.name];
+         valueDiv.innerHTML = `+ ${accumulateValueInSeconds(attr.value)} xp/s`;
+
+         attrDiv.appendChild(labelDiv);
+         attrDiv.appendChild(valueDiv);
+         tt.appendChild(attrDiv);
+      }
+
+      // Create tooltip drain
+      for (const stat of this.action.stats) {
+         const attrDiv = document.createElement("div");
+         const labelDiv = document.createElement("div");
+         const valueDiv = document.createElement("div");
+
+         attrDiv.className = "tooltip-row";
+         labelDiv.className = "tooltip-label";
+         valueDiv.className = "tooltip-value drain";
+         labelDiv.innerHTML = `${stat.name[0].toUpperCase()}${stat.name.substring(1)}`;
+         valueDiv.innerHTML = `- ${Math.abs(accumulateValueInSeconds(stat.value))}/s`;
+
+         attrDiv.appendChild(labelDiv);
+         attrDiv.appendChild(valueDiv);
+         tt.appendChild(attrDiv);
+      }
+
+      // Create tooltip cost
+      if (!isActionUnlocked(this.action)) {
+         const titleDiv = document.createElement("div");
+
+         titleDiv.id = "tooltip-cost-title";
+
+         for (const cost of this.action.cost) {
+            const attrDiv = document.createElement("div");
+            const labelDiv = document.createElement("div");
+            const valueDiv = document.createElement("div");
+
+            attrDiv.className = "tooltip-row cost";
+            labelDiv.className = "tooltip-label";
+            valueDiv.className = "tooltip-value";
+            labelDiv.innerHTML = `Purchase`;
+            valueDiv.innerHTML = `${cost.value} ${cost.name[0].toUpperCase()}${cost.name.substring(1)}`;
+
+            attrDiv.appendChild(labelDiv);
+            attrDiv.appendChild(valueDiv);
+            titleDiv.appendChild(attrDiv);
+         }
+         tt.appendChild(titleDiv);
+      }
+
       button.id = `${this.idPrefix}-${this.action.prop}`;
       button.innerHTML = this.options.label || this.action.label;
+      tt.id = "tooltip";
 
+      button.appendChild(tt);
       actionsContainer.appendChild(button);
 
       this.render();
@@ -43,36 +106,16 @@ export class PurchaseButton extends HTMLElement {
 
       if (isActionUnlocked(this.action)) {
          button.className = "action-button";
+         button.onclick = () => this.onClick(this.action);
 
-         button.onclick = (event) => {
-            event.target.animate([{ boxShadow: " 0px 0px 3px 2px rgba(255,255,255, 0.25)" }, { boxShadow: "none" }], {
-               duration: 1000,
-               iterations: 1,
-            });
-            this.onClick(this.action);
-         };
+         // Remove tooltip cost
+         const tt = this.shadowRoot.getElementById("tooltip-cost-title");
+         if (tt) {
+            tt.remove();
+         }
       } else {
-         button.className = "action-button-purchase";
-
-         button.onmouseenter = () => {
-            const tt = this.shadowRoot.getElementById(`button-tooltip-${this.action.key}`);
-            tt.style.display = "flex";
-            tt.style.opacity = 1;
-         };
-
-         button.onmouseleave = () => {
-            const tt = this.shadowRoot.getElementById(`button-tooltip-${this.action.key}`);
-            tt.style.display = "none";
-            tt.style.opacity = 0;
-         };
-
-         button.onclick = (event) => {
-            event.target.animate([{ boxShadow: " 0px 0px 3px 2px rgba(255,255,255, 0.25)" }, { boxShadow: "none" }], {
-               duration: 1000,
-               iterations: 1,
-            });
-            this.onPurchase(this.action);
-         };
+         button.className = "action-button purchase-button";
+         button.onclick = () => this.onPurchase(this.action);
       }
    };
 }

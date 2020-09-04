@@ -117,7 +117,8 @@ export const jobs = {
                variance: 0.1, // gives attacks a range of damage by 10% either up or down.
             },
             flavor: "Learning from the experience gives new insights",
-            description: "Gain experience when hit by an enemy based on their attack stats (enemy attack attribute * 1/10 of your child level).",
+            description:
+               "Gain experience when hit by an enemy based on their attack stats (enemy attack attribute * 1/10 of your child level).",
          },
       ],
       attack: {
@@ -183,7 +184,8 @@ export const jobs = {
                variance: 0.1, // gives attacks a range of damage by 10% either up or down.
             },
             flavor: "A swift blade can inflict greater wounds than the mightiest hammer.",
-            description: "An attack with bonus 30% + (1% per urchin level) critical chance, and a 220% critical damage multiplier",
+            description:
+               "An attack with bonus 30% + (1% per urchin level) critical chance, and a 220% critical damage multiplier",
          },
       ],
       tier: 2,
@@ -216,13 +218,14 @@ export const jobs = {
             levelNeeded: 4,
             unlocked: true,
             func: (enemy) => {
-               const percentageExpBonus = getAttr("int").level / 1 / getAnyJob("student").level.level * 0.5
+               const percentageExpBonus = (getAttr("int").level / 1 / getAnyJob("student").level.level) * 0.5;
                const percent = enemy.reward.exp * percentageExpBonus;
 
-               addJobExp(enemy.reward.exp + percent);
+               addJobExp(percent);
             },
             flavor: "A blow to the body, is a trove to the mind.",
-            description: "Gain percentage bonus class exp on kill. Enemy Exp + (Enemy Exp * intelligence / 1 / student level * 0.5)",
+            description:
+               "Gain percentage bonus class exp on kill. Enemy Exp + (Enemy Exp * intelligence / 1 / student level * 0.5)",
          },
          {
             type: "attack",

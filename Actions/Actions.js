@@ -18,54 +18,47 @@ export class Actions extends HTMLElement {
       const instance = HTMLTemplate.content.cloneNode(true);
       shadowRoot.appendChild(instance);
 
-      document.addEventListener("action-changed", this.render);
       document.addEventListener("attr-level", this.renderActions);
+
       this.initialRender();
    }
 
    initialRender = () => {
       this.renderActions(true);
-      this.render();
    };
 
    renderActions = (skip = false) => {
       if (skip || checkNewAvailableActions()) {
          for (const act in actions) {
             if (!this.buttonsCreated.includes(act)) {
-               if (isActionUnlocked(actions[act])) {
-                  let button;
-                  if (act === "rest") {
-                     button = new Button(actions[act], "actions", (act) => {
-                        setAction(act.key);
-                        setAction(act.key);
-                     });
-                  } else {
-                     button = new PurchaseButton(
-                        actions[act],
-                        "actions",
-                        (act) => setAction(act.key),
-                        (act) => purchaseAction(act.key)
-                     );
-                  }
-
-                  const row = this.shadowRoot.getElementById(`tier-${actions[act].tier}`);
-                  row.appendChild(button);
-
-                  const seperator = document.createElement("div");
-                  row.appendChild(seperator);
-                  seperator.className = "button-seperator";
-
-                  // Keep record of buttons on screen so they are not duped.
-                  this.buttonsCreated.push(act);
+               let button;
+               if (act === "rest") {
+                  button = new Button(actions[act], "actions", (action) => {
+                     setAction(action.key);
+                     setAction(action.key);
+                  });
+               } else {
+                  button = new PurchaseButton(
+                     actions[act],
+                     "actions",
+                     (action) => setAction(action.key),
+                     (action) => purchaseAction(action)
+                  );
                }
+
+               button.id = `button-${act}`;
+
+               const row = this.shadowRoot.getElementById(`tier-${actions[act].tier}`);
+               row.appendChild(button);
+
+               const seperator = document.createElement("div");
+               row.appendChild(seperator);
+               seperator.className = "button-seperator";
+
+               // Keep record of buttons on screen so they are not duped.
+               this.buttonsCreated.push(act);
             }
          }
-      }
-   };
-
-   render = () => {
-      if (actions[window.player.action]) {
-         this.shadowRoot.getElementById("action-description").innerHTML = actions[window.player.action].description;
       }
    };
 }
@@ -100,9 +93,17 @@ export function isActionUnlocked(action) {
 }
 
 export function purchaseAction(action) {
-   if (payGold(action)) {
+   const gold = action.cost.find((c) => c.name === "gold");
+   const goldCost = gold ? gold.value : undefined;
+   if (goldCost && payGold(goldCost)) {
       window.player.actionsUnlocked.push(action.key);
+      actionPurchased();
    }
+}
+
+export function actionPurchased(data = {}) {
+   const event = new CustomEvent("action-purchased", data);
+   document.dispatchEvent(event);
 }
 
 export const actions = {
@@ -122,12 +123,37 @@ export const actions = {
       tier: 2,
       description: "Climbing",
       label: "Climb",
-      cost: [{ name: "gold", value: 3 }],
+      cost: [{ name: "gold", value: 10 }],
       attrs: [
-         { name: "str", value: 0.02 },
+         { name: "str", value: 0.015 },
          { name: "agi", value: 0.005 },
       ],
-      stats: [{ name: "fatigue", value: -0.2 }],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "str-train-3": {
+      key: "str-train-3",
+      type: "train",
+      tier: 3,
+      description: "Lifting",
+      label: "Lift",
+      cost: [{ name: "gold", value: 1000 }],
+      attrs: [{ name: "str", value: 0.11 }],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "str-train-4": {
+      key: "str-train-4",
+      type: "train",
+      tier: 4,
+      description: "Boasting",
+      label: "Boast",
+      cost: [{ name: "gold", value: 6000 }],
+      attrs: [
+         { name: "str", value: 0.25 },
+         { name: "per", value: 0.15 },
+      ],
+      stats: [{ name: "fatigue", value: -0.1 }],
    },
 
    "agi-train-1": {
@@ -146,12 +172,43 @@ export const actions = {
       tier: 2,
       description: "Running",
       label: "Run",
-      cost: [{ name: "gold", value: 3 }],
+      cost: [{ name: "gold", value: 10 }],
       attrs: [
-         { name: "agi", value: 0.02 },
+         { name: "agi", value: 0.015 },
          { name: "str", value: 0.005 },
       ],
-      stats: [{ name: "fatigue", value: -0.2 }],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "agi-train-3": {
+      key: "agi-train-3",
+      type: "train",
+      tier: 3,
+      description: "Sparring",
+      label: "Spar",
+      cost: [{ name: "gold", value: 1000 }],
+      attrs: [
+         { name: "per", value: 0.02 },
+         { name: "str", value: 0.05 },
+         { name: "agi", value: 0.07 },
+      ],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "agi-train-4": {
+      key: "agi-train-4",
+      type: "train",
+      tier: 4,
+      description: "Chess Boxing",
+      label: "Chess Box",
+      cost: [{ name: "gold", value: 6000 }],
+      attrs: [
+         { name: "int", value: 0.18 },
+         { name: "per", value: 0.07 },
+         { name: "agi", value: 0.18 },
+         { name: "str", value: 0.12 },
+      ],
+      stats: [{ name: "fatigue", value: -0.1 }],
    },
 
    "int-train-1": {
@@ -170,8 +227,37 @@ export const actions = {
       tier: 2,
       description: "Reading",
       label: "Read",
-      cost: [{ name: "gold", value: 3 }],
+      cost: [{ name: "gold", value: 10 }],
       attrs: [{ name: "int", value: 0.005 }],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "int-train-3": {
+      key: "int-train-3",
+      type: "train",
+      tier: 3,
+      description: "Applying Knowledge",
+      label: "Apply Knowledge",
+      cost: [{ name: "gold", value: 1000 }],
+      attrs: [
+         { name: "int", value: 0.08 },
+         { name: "str", value: 0.015 },
+         { name: "agi", value: 0.015 },
+      ],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "int-train-4": {
+      key: "int-train-4",
+      type: "train",
+      tier: 4,
+      description: "Assimilate all knowledge",
+      label: "Assimilate",
+      cost: [{ name: "gold", value: 6000 }],
+      attrs: [
+         { name: "int", value: 0.27 },
+         { name: "per", value: 0.1 },
+      ],
       stats: [{ name: "fatigue", value: -0.1 }],
    },
 
@@ -186,13 +272,41 @@ export const actions = {
    },
 
    "per-train-2": {
-      key: "per-train-1",
+      key: "per-train-2",
       type: "train",
-      tier: 1,
+      tier: 2,
+      description: "Staring",
+      label: "Stare",
+      cost: [{ name: "gold", value: 10 }],
+      attrs: [{ name: "per", value: 0.015 }],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "per-train-3": {
+      key: "per-train-3",
+      type: "train",
+      tier: 3,
+
+      description: "Pretending to be blind",
+      label: "Fake Blindness",
+      cost: [{ name: "gold", value: 1000 }],
+      attrs: [
+         { name: "per", value: 0.09 },
+         { name: "int", value: 0.015 },
+         { name: "str", value: 0.015 },
+      ],
+      stats: [{ name: "fatigue", value: -0.1 }],
+   },
+
+   "per-train-4": {
+      key: "per-train-4",
+      type: "train",
+      tier: 4,
+
       description: "Practicing Echo Location",
       label: "Echo Location",
-      cost: [{ name: "gold", value: 3 }],
-      attrs: [{ name: "per", value: 0.005 }],
+      cost: [{ name: "gold", value: 6000 }],
+      attrs: [{ name: "per", value: 0.32 }],
       stats: [{ name: "fatigue", value: -0.1 }],
    },
 

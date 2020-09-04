@@ -31,7 +31,7 @@ const SKILL_LIMIT = 5;
          document.addEventListener("attr-level", this.render);
          document.addEventListener("status-changed", this.renderBuffs);
          document.addEventListener("time-elapsed", this.renderBuffs);
-         document.addEventListener("gold-change", this.renderGold);
+         document.addEventListener("gold-changed", this.renderGold);
       }
 
       connectedCallback() {
@@ -59,7 +59,7 @@ const SKILL_LIMIT = 5;
          goldContainer.appendChild(goldLabel);
          goldContainer.appendChild(goldValue);
 
-         goldContainer.className = "attribute-details";
+         goldContainer.className = "gold-container container";
          goldLabel.className = "attribute-label";
          goldValue.className = "attribute-value";
 
