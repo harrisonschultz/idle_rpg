@@ -10,6 +10,7 @@ import {
    checkRequirements,
    getAnyJob,
    addAttrExp,
+   subtractStatCurrent,
 } from "../Character/Character.js";
 import { ProgressBar } from "../components/ProgressBar/ProgressBar.js";
 import { theme } from "../theme.js";
@@ -106,6 +107,7 @@ export const jobs = {
                for (const attr of attack.dmgModifiers) {
                   addAttrExp(attr.name, attr.modifier * (0.01 * getAnyJob("child").level.level));
                }
+               return data
             },
             attack: {
                speed: 15,
@@ -307,6 +309,78 @@ export const jobs = {
          dmgModifiers: [
             { name: "agi", modifier: 0.45 },
             { name: "per", modifier: 0.4 },
+         ],
+         variance: 0.1, // gives attacks a range of damage by 10% either up or down.
+      },
+   },
+   wizard: {
+      label: "Wizard",
+      prop: "wizard",
+      description: "Adept at magic, you see the world with new potential",
+      level: { level: 1, exp: 0, expNeeded: 1.1 },
+      requirements: [
+         { type: "job", name: "student", level: 15 },
+         { type: "attribute", name: "int", level: 25 },
+         { type: "attribute", name: "per", level: 25 },
+      ],
+      skillPoints: 0,
+      skills: [
+         {
+            type: "whenHit",
+            label: "Mana Armor",
+            key: "manaArmor",
+            levelNeeded: 8,
+            unlocked: false,
+            func: (data) => {
+               const { damage } = data;
+               let dmgConvsersionRate = getAnyJob('wizard').level.level + 30
+
+               if (dmgConvsersionRate > 100) {
+                  dmgConvsersionRate = 100
+               }
+
+               // Convert to percentage
+               dmgConvsersionRate = dmgConvsersionRate / 100
+
+               // Initial Rates
+               let manaDmg = damage * dmgConvsersionRate
+               let healthDmg = 1 - dmgConvsersionRate * damage
+
+               // Get the correct health damage if there is not enough mana to mitigate the damage.
+               const finalMana = getStat('mana').current - manaDmg
+               if (finalMana < 0) {
+                  healthDmg += Math.abs(finalMana)
+               }
+
+
+               subtractStatCurrent('mana', manaDmg)
+
+               // Alter the damage
+               damage = healthDmg
+
+               return data
+            },
+            attack: {
+               speed: 15,
+               criticalDamage: 1.5,
+               dmgModifiers: [
+                  { name: "str", modifier: 0.3 },
+                  { name: "agi", modifier: 0.3 },
+               ],
+               variance: 0.1, // gives attacks a range of damage by 10% either up or down.
+            },
+            flavor: "Learning from the experience gives new insights",
+            description:
+               "Gain experience when hit by an enemy based on their attack stats (enemy attack attribute * 1/10 of your child level).",
+         },
+      ],
+      tier: 3,
+      attack: {
+         speed: 28,
+         criticalDamage: 2,
+         dmgModifiers: [
+            { name: "int", modifier: 0.75 },
+            { name: "per", modifier: 0.2 },
          ],
          variance: 0.1, // gives attacks a range of damage by 10% either up or down.
       },
