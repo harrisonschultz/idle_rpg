@@ -107,7 +107,7 @@ export const jobs = {
                for (const attr of attack.dmgModifiers) {
                   addAttrExp(attr.name, attr.modifier * (0.01 * getAnyJob("child").level.level));
                }
-               return data
+               return data;
             },
             attack: {
                speed: 15,
@@ -298,7 +298,7 @@ export const jobs = {
                const apexPredator = { ...effects.apexPredator };
                addEffect(apexPredator);
             },
-            flavor: "placeholder",
+            flavor: "At the top of the food chain, everyone is prey.",
             description: "Increases critical damage multiplier by 100% + (4x class level) on kill",
          },
       ],
@@ -327,51 +327,63 @@ export const jobs = {
       skills: [
          {
             type: "whenHit",
-            label: "Mana Armor",
-            key: "manaArmor",
-            levelNeeded: 8,
+            label: "Arcane Shield",
+            key: "arcaneShield",
+            levelNeeded: 6,
             unlocked: false,
             func: (data) => {
                const { damage } = data;
-               let dmgConvsersionRate = getAnyJob('wizard').level.level + 30
+               let dmgConvsersionRate = getAnyJob("wizard").level.level + 30;
 
                if (dmgConvsersionRate > 100) {
-                  dmgConvsersionRate = 100
+                  dmgConvsersionRate = 100;
                }
 
                // Convert to percentage
-               dmgConvsersionRate = dmgConvsersionRate / 100
+               dmgConvsersionRate = dmgConvsersionRate / 100;
 
                // Initial Rates
-               let manaDmg = damage * dmgConvsersionRate
-               let healthDmg = 1 - dmgConvsersionRate * damage
+               let manaDmg = damage * dmgConvsersionRate;
+               let healthDmg = 1 - dmgConvsersionRate * damage;
 
                // Get the correct health damage if there is not enough mana to mitigate the damage.
-               const finalMana = getStat('mana').current - manaDmg
+               const finalMana = getStat("mana").current - manaDmg;
                if (finalMana < 0) {
-                  healthDmg += Math.abs(finalMana)
+                  healthDmg += Math.abs(finalMana);
                }
 
-
-               subtractStatCurrent('mana', manaDmg)
+               subtractStatCurrent("mana", manaDmg);
 
                // Alter the damage
-               damage = healthDmg
+               damage = healthDmg;
 
-               return data
+               return data;
             },
-            attack: {
-               speed: 15,
-               criticalDamage: 1.5,
-               dmgModifiers: [
-                  { name: "str", modifier: 0.3 },
-                  { name: "agi", modifier: 0.3 },
-               ],
-               variance: 0.1, // gives attacks a range of damage by 10% either up or down.
-            },
-            flavor: "Learning from the experience gives new insights",
+            flavor: "Armor of mind is stronger than any steel.",
             description:
-               "Gain experience when hit by an enemy based on their attack stats (enemy attack attribute * 1/10 of your child level).",
+               "Mitigate incoming hit damage by damaging mana as a percentage of the damage (Damage converted to mana damage is 30% + wizard level)",
+         },
+         {
+            type: "onBlock",
+            label: "Energy Transfer",
+            key: "energyTransfer",
+            levelNeeded: 10,
+            unlocked: false,
+            func: (data) => {
+               const { damage, attack } = data;
+               let dmgConvsersionRate = getAnyJob("wizard").level.level + 50;
+
+               dmgConvsersionRate = dmgConvsersionRate / 100;
+
+               let manaRecovery = damage * dmgConvsersionRate;
+
+               // Get the correct health damage if there is not enough mana to mitigate the damage.
+               addStatCurrent("mana", manaRecovery);
+
+               return data;
+            },
+            flavor: "Repurpose that which is wasted.",
+            description: "Convert blocked damage into mana (Damage converted to mana is 50% + wizard level)",
          },
       ],
       tier: 3,
